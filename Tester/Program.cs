@@ -12,27 +12,43 @@ namespace Tester
         static void Main(string[] args)
         {
             var v1 = new LegacyObjectMetadataProvider.V1();
-            string metadata = v1.ProvideMetadata();
+            var v2 = new LegacyObjectMetadataProvider.V2();
+            var v3 = new LegacyObjectMetadataProvider.V3();
+            var v4 = new LegacyObjectMetadataProvider.V4();
+            var v5 = new LegacyObjectMetadataProvider.V5();
+
+            string metadata = v5.ProvideMetadata();
 
             CodeExtractor codeExtractor = new CodeExtractor();
+            codeExtractor.msgFromExtractor += OnMsgFromExtractor; //subscribe to msgFromExtractor event with OnMsgFromExtractor method
             string extractedCode = codeExtractor.GetCodeFromString(metadata);
 
+            Validate(extractedCode, metadata);
+        }
+
+        static void Validate(string extractedCode, string metadata)
+        {
             var validator = new ObjectCodeValidator();
             try
             {
                 validator.AssertCodeIsValid(extractedCode, metadata);
             }
-            catch(Exception error)
+            catch (Exception error)
             {
-                Console.WriteLine($"Error while extracting code from:\r\n" +
-                                  $"{metadata}\r\n" +
+                Console.WriteLine($"Error while extracting code from:\r\n\r\n" +
+                                  $"{metadata}\r\n\r\n" +
                                   $" {error.Message}");
                 Console.ReadKey(true);
                 return;
             }
-            Console.WriteLine($"Metadata: {metadata}\r\n" +
+            Console.WriteLine($"Metadata:\r\n{metadata}\r\n\r\n" +
                               $"Extracted Code: {extractedCode}");
             Console.ReadKey(true);
+        }
+
+        private static void OnMsgFromExtractor(object sender, string msg)
+        {
+            Console.WriteLine(msg+"\r\n");
         }
     }
 }
