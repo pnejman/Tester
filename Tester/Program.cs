@@ -16,8 +16,10 @@ namespace Tester
             var v3 = new LegacyObjectMetadataProvider.V3();
             var v4 = new LegacyObjectMetadataProvider.V4();
             var v5 = new LegacyObjectMetadataProvider.V5();
+            var v6 = new LegacyObjectMetadataProvider.V6();
+            var v7 = new LegacyObjectMetadataProvider.V7();
 
-            string metadata = v5.ProvideMetadata();
+            string metadata = v3.ProvideMetadata();
 
             CodeExtractor codeExtractor = new CodeExtractor();
             codeExtractor.msgFromExtractor += OnMsgFromExtractor; //subscribe to msgFromExtractor event with OnMsgFromExtractor method
