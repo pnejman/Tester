@@ -9,23 +9,33 @@ namespace Tester
 {
     class Program
     {
+        readonly static int numberOfTries = 1000000; //<--can be changed by Designer
+        static bool displayFullMsgs = false; //<-- can be changed by Designer
+
+        static int numberOfSuccess = 0;
+
         static void Main(string[] args)
         {
-            var v1 = new LegacyObjectMetadataProvider.V1();
-            var v2 = new LegacyObjectMetadataProvider.V2();
-            var v3 = new LegacyObjectMetadataProvider.V3();
-            var v4 = new LegacyObjectMetadataProvider.V4();
-            var v5 = new LegacyObjectMetadataProvider.V5();
-            var v6 = new LegacyObjectMetadataProvider.V6();
-            var v7 = new LegacyObjectMetadataProvider.V7();
-
-            string metadata = v3.ProvideMetadata();
-
+            var last = new LegacyObjectMetadataProvider.LatestVersionProvider();
             CodeExtractor codeExtractor = new CodeExtractor();
             codeExtractor.msgFromExtractor += OnMsgFromExtractor; //subscribe to msgFromExtractor event with OnMsgFromExtractor method
-            string extractedCode = codeExtractor.GetCodeFromString(metadata);
 
-            Validate(extractedCode, metadata);
+            for (int trial = 0; trial < numberOfTries; trial++)
+            {
+                OptionallyWriteLine("--------------------");
+                string metadata = last.ProvideMetadata();
+                string extractedCode = codeExtractor.GetCodeFromString(metadata);
+                Validate(extractedCode, metadata);
+
+                if (!displayFullMsgs)
+                {
+                    Console.Clear();
+                    Console.WriteLine($"Try: {trial + 1} of {numberOfTries}\r\n" +
+                                      $"Success: {numberOfSuccess} of {numberOfTries}");
+                }
+            }
+            OptionallyWriteLine($"Success rate: {numberOfSuccess}/{numberOfTries}");
+            Console.ReadKey(true);
         }
 
         static void Validate(string extractedCode, string metadata)
@@ -37,20 +47,28 @@ namespace Tester
             }
             catch (Exception error)
             {
-                Console.WriteLine($"Error while extracting code from:\r\n\r\n" +
-                                  $"{metadata}\r\n\r\n" +
-                                  $" {error.Message}");
-                Console.ReadKey(true);
+                OptionallyWriteLine($"Error while extracting code from:\r\n\r\n" +
+                                    $"{metadata}\r\n\r\n" +
+                                    $" {error.Message}");
                 return;
             }
-            Console.WriteLine($"Metadata:\r\n{metadata}\r\n\r\n" +
-                              $"Extracted Code: {extractedCode}");
-            Console.ReadKey(true);
+
+            OptionallyWriteLine($"Metadata:\r\n{metadata}\r\n\r\n" +
+                                $"Extracted Code: {extractedCode}");
+            numberOfSuccess++;
         }
 
         private static void OnMsgFromExtractor(object sender, string msg)
         {
-            Console.WriteLine(msg+"\r\n");
+            OptionallyWriteLine(msg + "\r\n");
+        }
+
+        private static void OptionallyWriteLine(string text)
+        {
+            if (displayFullMsgs)
+            {
+                Console.WriteLine(text);
+            }
         }
     }
 }

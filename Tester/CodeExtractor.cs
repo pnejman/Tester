@@ -30,10 +30,10 @@ namespace Tester
             TryAnotherVersion("Version 4 (4a)", 41, metadata, "[0-9]+~[A-Za-z0-9_ ]+~[A-Z0-9]+_[A-Z0-9]+_v[0-9]+~[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+_.*?~.*?(\\..[a-zA-Z]+)+$");
             TryAnotherVersion("Version 4 (4b)", 42, metadata, "[0-9]+~[A-Za-z0-9_ ]+~[A-Z0-9]+_[A-Z0-9]+_v[0-9]+~[A-Z0-9]+~[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9]+_.*?~.*?(\\..[a-zA-Z]+)+$");
             TryAnotherVersion("Version 5", 5, metadata, "<Object>[\\s\\S]+<ItemType>[a-zA-Z0-9 ]+<Metadata>[\\s\\S]+</ *Metadata>[\\s\\S]+</ *Object>");
-            TryAnotherVersion("Version 6", 6, metadata, "<Object>[\\s\\S]+<ItemType>[\\s\\S]+<Code>[\\s\\S]+<Market>(?!.*BG|.*PL|.*EL).*</Market>+[\\s\\S]+<Version>[\\s\\S]+<Metadata>[\\s\\S]+</ *Metadata>[\\s\\S]+</ *Object>");
+            TryAnotherVersion("Version 6", 6, metadata, "\\{[\\s\\S]+\"object\":[\\s\\S]+\"Metadata\":[\\s\\S]+");
             TryAnotherVersion("Version 7 (7a)", 71, metadata, "<Object>[\\s\\S]+<ItemType>[\\s\\S]+<Code>[\\s\\S]+<Market>(?!.*BG|.*PL|.*EL).*</Market>+[\\s\\S]+<Version>[\\s\\S]+<Metadata>[\\s\\S]+</ *Metadata>[\\s\\S]+</ *Object>");
             TryAnotherVersion("Version 7 (7b)", 72, metadata, "<Object>[\\s\\S]+<ItemType>[\\s\\S]+<Code>[\\s\\S]+<Market>(BG|PL|EL)</Market>+[\\s\\S]+<Version>[\\s\\S]+<Metadata>[\\s\\S]+</ *Metadata>[\\s\\S]+</ *Object>");
- 
+
             if (detectedVersion == -1)
             {
                 msgFromExtractor?.Invoke(this, "Error: Metadata version not recognized.");
@@ -62,7 +62,7 @@ namespace Tester
                     extractedCode = match.ToString();
                     break;
                 case 41:
-                    match = Regex.Replace(metadata, "(^(.*?~){3}[a-z0-9-_]+)|(~.*?$)", "");
+                    match = Regex.Replace(metadata, "(^(.*?~){3}[a-z0-9-]+)_|(~.*?$)", "");
                     extractedCode = match.ToString();
                     break;
                 case 42:
